@@ -1,70 +1,46 @@
-# Getting Started with Create React App
+## Project Name: Anonymous Feedback dApp
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack decentralized application (dApp) built on the Stellar blockchain. Users can utilize this dApp to register anonymous feedback. The smart contract includes logic to automatically assign unique IDs to each newly created feedback, and these registered feedback entries can be accessed using their respective feedback IDs.
 
-## Available Scripts
+---
+## Technologies Used:
+- Smartcontract : Rust, Soroban-SDK
+- Frontend : ReactJS, TailwindCSS
+- Integeration : Stellar-SDK
+---
 
-In the project directory, you can run:
+## Smart-contract
 
-### `npm start`
+- All the materials related to the smart contract can be found in the ```anonymous-feedback-smartcontract``` folder:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- The path to the smart contract is:  ```./anonymous-feedback-smartcontract/contracts/hello_world/src/lib.rs```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+### Deployed smartcontract address: ```CBWKODZKEJ3BNYZ57R6A2XXIJ6GR5LMDDIBB76ZIPDEDYXVNYS2WUCRV```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Functions written inside the Anonymous Feedback Smartcontract: 
 
-### `npm run build`
+1. ```send_feedback(env: Env, feedback_msg: String) -> u64``` : Takes a feedback message (of type ```String```) as an argument, assigns a unique ID to each feedback, stores the feedback on the blockchain, and returns the feedback ID for the newly created entry. 
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. ```fetch_feedback(env: Env, fb_id: u64) -> Feedback``` : Takes a feedback ID (of type ```u64```) as an argument and returns the feedback associated with the specified ID.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Deployed smartcontract address: CBWKODZKEJ3BNYZ57R6A2XXIJ6GR5LMDDIBB76ZIPDEDYXVNYS2WUCRV
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## ⚠️ Issue:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Title: 
+Getting ```undefined``` When Fetching Data from the Blockchain Using Stellar-SDK
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Note:
+Both setter (```send_feedback()```) and getter (```fetch_feedback()```) functions work as expected when invoked from the terminal using Stellar-CLI.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Issue Description: 
+The getter smart contract function (```fetch_feedback()```) returns undefined when invoked using the JavaScript interaction function (```fetchFeedback()```) built with Stellar-SDK (located in the Soroban.js file). This issue persists despite the function being correctly invoked.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Additionally, while I am able to store data on the blockchain using the setter smart contract function (```send_feedback()```) through the ```sendFeedback()``` interaction function, this function also returns undefined instead of the expected object.
+ 
+ 
+The transaction builder function and all interaction functions are implemented in the Soroban.js file.
+- Path to ```Soroban.js``` file: ```src/components/Soroban.js```
