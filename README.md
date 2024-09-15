@@ -5,6 +5,7 @@ A full-stack decentralized application (dApp) built on the Stellar blockchain. U
 ---
 ## Technologies Used:
 - Smartcontract : Rust, Soroban-SDK
+- Wallet : Freighter (available as a chrome-extension)
 - Frontend : ReactJS, TailwindCSS
 - Integeration : Stellar-SDK
 ---

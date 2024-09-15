@@ -59,28 +59,42 @@ async function contractInt(caller, functName, values) {
   let tx = TransactionBuilder.fromXDR(signedTx, Networks.TESTNET);
 
   try {
-    let sendTx = await server.sendTransaction(tx).catch(function (err) {
+    let sendResponse = await server.sendTransaction(tx).catch(function (err) {
       console.error("Catch-1", err);
       return err;
     });
-    if (sendTx.errorResult) {
+    if (sendResponse.errorResult) {
       throw new Error("Unable to submit transaction");
     }
-    if (sendTx.status === "PENDING") {
-      let txResponse = await server.getTransaction(sendTx.hash);
+    if (sendResponse.status === "PENDING") {
+      let getResponse = await server.getTransaction(sendResponse.hash);
       //   we will continously checking the transaction status until it gets successfull added to the blockchain ledger or it gets rejected
-      while (txResponse.status === "NOT_FOUND") {
-        txResponse = await server.getTransaction(sendTx.hash);
-        await new Promise((resolve) => setTimeout(resolve, 100));
+      while (getResponse.status === "NOT_FOUND") {
+        getResponse = await server.getTransaction(sendResponse.hash);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+        
+        console.log(`getTransaction response: ${JSON.stringify(getResponse)}`);
+
+      if (getResponse.status === "SUCCESS") {
+        // Make sure the transaction's resultMetaXDR is not empty
+        if (!getResponse.resultMetaXdr) {
+          throw "Empty resultMetaXDR in getTransaction response";
+        }
+        // Find the return value from the contract and return it
+        let transactionMeta = getResponse.resultMetaXdr;
+        let returnValue = transactionMeta.v3().sorobanMeta().returnValue();
+        console.log(`Transaction result: ${returnValue.value()}`);
+      } else {
+        throw `Transaction failed: ${getResponse.resultXdr}`;
       }
-      if (txResponse.status === "SUCCESS") {
-        let result = txResponse.returnValue;
-        return result;
-      }
+    } else {
+        throw sendResponse.errorResultXdr;
     }
   } catch (err) {
-    console.log("Catch-2", err);
-    return;
+    // Catch and report any errors we've thrown
+    console.log("Sending transaction failed");
+    console.log(JSON.stringify(err));
   }
 }
 
