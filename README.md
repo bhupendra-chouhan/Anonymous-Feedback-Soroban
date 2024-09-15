@@ -25,8 +25,6 @@ A full-stack decentralized application (dApp) built on the Stellar blockchain. U
 
 2. ```fetch_feedback(env: Env, fb_id: u64) -> Feedback``` : Takes a feedback ID (of type ```u64```) as an argument and returns the feedback associated with the specified ID.
 
-Deployed smartcontract address: CBWKODZKEJ3BNYZ57R6A2XXIJ6GR5LMDDIBB76ZIPDEDYXVNYS2WUCRV
-
 ---
 
 ## ⚠️ Issue:
