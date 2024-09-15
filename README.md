@@ -1,6 +1,12 @@
 ## Project Name: Anonymous Feedback dApp
 
 A full-stack decentralized application (dApp) built on the Stellar blockchain. Users can utilize this dApp to register anonymous feedback. The smart contract includes logic to automatically assign unique IDs to each newly created feedback, and these registered feedback entries can be accessed using their respective feedback IDs.
+---
+## Table of content:
+- Technologies Used
+- Smart-contract Info
+- ⚠️ Issue
+- Project Setup Guide
 
 ---
 ## Technologies Used:
@@ -10,7 +16,7 @@ A full-stack decentralized application (dApp) built on the Stellar blockchain. U
 - Integeration : Stellar-SDK
 ---
 
-## Smart-contract
+## Smart-contract Info:
 
 - All the materials related to the smart contract can be found in the ```anonymous-feedback-smartcontract``` folder:
 
@@ -63,5 +69,11 @@ https://developers.stellar.org/docs/build/guides/transactions/invoke-contract-tx
    ![image](https://github.com/user-attachments/assets/c33ae590-1a3a-44c2-9501-35b92b1f9dda)
 
 
+---
 
-
+## Project Setup Guide:
+1. Install NodeJS, Rust, Stellar-CLI
+2. Install Freighter Wallet chrome extension.
+3. Clone the repository : ```git clone https://github.com/bhupendra-chouhan/Anonymous-Feedback-Soroban.git```
+4. Install Dependencies: ```npm install```
+5. Start the project: ```npm run start```
