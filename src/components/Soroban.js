@@ -107,7 +107,7 @@ async function sendFeedback(caller, fbData) {
 
   try {
     result = await contractInt(caller, "send_feedback", value);
-    console.log("Your Feedback ID is: ", result); // 'result' should be an object, but getting 'undefined'
+    console.log("Your Feedback ID is: ", result); // ⚠️ 'result' should be an object, but getting 'undefined'
   } catch (error) {
     console.log("Unable to create Feedback!!, ", error);
   }
@@ -122,7 +122,7 @@ async function fetchFeedback(caller, fb_id) {
 
     try {
         result = await contractInt(caller, "fetch_feedback", value);
-        console.log(`Fetched Feedback for the feedback-Id ${fb_id} is : ${result}`); // 'result' should be an object, but getting 'undefined'
+        console.log(`Fetched Feedback for the feedback-Id ${fb_id} is : ${result}`); // ⚠️ 'result' should be an object, but getting 'undefined'
     } catch (error) {
         console.log("Unable to fetch Feedback!!, ", error);
     }
