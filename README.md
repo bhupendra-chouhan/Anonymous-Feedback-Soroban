@@ -17,7 +17,7 @@ A full-stack decentralized application (dApp) built on the Stellar blockchain. U
 - The path to the smart contract is:  ```./anonymous-feedback-smartcontract/contracts/hello_world/src/lib.rs```
 
 
-### Deployed smartcontract address: ```CBWKODZKEJ3BNYZ57R6A2XXIJ6GR5LMDDIBB76ZIPDEDYXVNYS2WUCRV```
+### Deployed smartcontract address: ```CDAN4KQKD633XF6MCOHI7Q3DJQX4E7ENCGKUBHGQKIKJWI6DVDPX54XW```
 
 ### Functions written inside the Anonymous Feedback Smartcontract: 
 
@@ -45,3 +45,7 @@ Additionally, while I am able to store data on the blockchain using the setter s
  
 The transaction builder function and all interaction functions are implemented in the Soroban.js file.
 - Path to ```Soroban.js``` file: ```src/components/Soroban.js```
+
+### NOTE: 
+I have followed the Stellar documentation mentioned below to create the transaction builder function:
+https://developers.stellar.org/docs/build/guides/transactions/invoke-contract-tx-sdk

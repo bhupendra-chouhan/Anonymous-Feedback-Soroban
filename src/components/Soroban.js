@@ -27,6 +27,7 @@ let params = {
   networkPassphrase: Networks.TESTNET,
 };
 
+// Transaction Builder Function:
 async function contractInt(caller, functName, values) {
   const server = new SorobanRpc.Server(rpcUrl, { allowHttp: true });
   const sourceAccount = await server.getAccount(caller);
@@ -99,7 +100,7 @@ async function contractInt(caller, functName, values) {
 }
 
 
-// function to interact with it's respective smart contract functions:
+// Interaction Functions: Built To interact with it's respective smart contract functions:
 
 async function sendFeedback(caller, fbData) {  
   let value = stringToScValString(fbData);
