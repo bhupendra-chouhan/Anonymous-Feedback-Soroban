@@ -55,17 +55,21 @@ https://developers.stellar.org/docs/build/guides/transactions/invoke-contract-tx
 
 ---
 
-## Screenshots of Issue:
+## Screenshots of Issue (You can reproduce the issue by following the screenshots):
 1. Creating a Feedback and Storing it onchain by invoking the ```send_feedback()``` smartcontract function:
    ![image](https://github.com/user-attachments/assets/83bfebed-4b14-4ff9-b38d-575c9e89f9e2)
 
-   Output:
+   Result:
+   - Expected output: ```4```
+   - Output got: ```Undefined```
    ![image](https://github.com/user-attachments/assets/e0623442-1a5f-4773-8a53-adb7ecf90f9d)
 
-2. Fetching a feedback with feedback-id ```4``` by invoking the ```fetch_feedback()``` smartcontract function:
+3. Fetching a feedback with feedback-id ```4``` by invoking the ```fetch_feedback()``` smartcontract function:
    ![image](https://github.com/user-attachments/assets/1baba311-3c23-425e-977f-da052c90af54)
 
-   Output:
+   Result:
+   - Expected output: ```Feedback Number 4```
+   - Output got: ```Undefined```
    ![image](https://github.com/user-attachments/assets/c33ae590-1a3a-44c2-9501-35b92b1f9dda)
 
 
