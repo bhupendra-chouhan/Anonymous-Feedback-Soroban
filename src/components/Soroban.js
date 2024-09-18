@@ -11,11 +11,11 @@ import { userSignTransaction } from "./Freighter";
 let rpcUrl = "https://soroban-testnet.stellar.org";
 
 let contractAddress =
-  "CDAN4KQKD633XF6MCOHI7Q3DJQX4E7ENCGKUBHGQKIKJWI6DVDPX54XW";
+  "CBG7QFA5CWUIJ6QQQSCWS33UNV6TN3EVQHRZLR5VYJWT5X73J6Y46U7A";
 
 // coverting String to ScVal form
 const stringToScValString = (value) => {
-  return nativeToScVal(value);
+  return nativeToScVal(value); // XDR format conversion
 };
 
 const numberToU64 = (value) => {
@@ -103,11 +103,10 @@ async function contractInt(caller, functName, values) {
 // Interaction Functions: Built To interact with it's respective smart contract functions:
 
 async function sendFeedback(caller, fbData) {  
-  let value = stringToScValString(fbData);
-  let result;
+  let value = stringToScValString(fbData); //XDR format  let result;
 
   try {
-    result = await contractInt(caller, "send_feedback", value);
+    let result = await contractInt(caller, "send_feedback", value);
     console.log("Your Feedback ID is: ", result); // ⚠️ 'result' should be an object, but getting 'undefined'
   } catch (error) {
     console.log("Unable to create Feedback!!, ", error);

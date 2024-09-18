@@ -41,7 +41,7 @@ impl Anonymousfeedback {
     }
 
 
-    pub fn fetch_feedback(env: Env, fb_id: u64) -> Feedback{
+    pub fn fetch_feedback(env: Env, fb_id: u64) -> Feedback {
         let key = FBbook::Feedback(fb_id.clone());
 
         env.storage().instance().get(&key).unwrap_or(Feedback {
