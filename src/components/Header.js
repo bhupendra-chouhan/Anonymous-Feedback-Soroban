@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { checkConnection, retrievePublicKey } from "./Freighter";
+import { fetchFeedback } from "./SmartContractInteraction";
 
 const Header = ({ setPubKey }) => {
   const [connect, getConnected] = useState("Connect");
@@ -12,6 +13,7 @@ const Header = ({ setPubKey }) => {
     if (publickey !== "") {
       getConnected("Connected!");
       setPubKey(publickey);
+      fetchFeedback(publickey, 1);
     }
   }, [publickey]);
 
