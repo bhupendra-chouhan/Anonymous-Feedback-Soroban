@@ -89,7 +89,6 @@ import { userSignTransaction } from "./Freighter";
         return result;
       }
 
-
     // } catch (error) {
     //   console.error("Error invoking smart contract:", error);
     // }
