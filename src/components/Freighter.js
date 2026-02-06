@@ -1,8 +1,9 @@
 import {
-  requestAccess,
-  signTransaction,
+    getAddress,
   setAllowed,
+  signTransaction
 } from "@stellar/freighter-api";
+import { Networks } from "@stellar/stellar-sdk";
 
 async function checkConnection() {
   const isAllowed = await setAllowed();
@@ -12,27 +13,17 @@ async function checkConnection() {
 }
 
 const retrievePublicKey = async () => {
-  let publicKey = "";
-  let error = "";
-  try {
-    publicKey = await requestAccess();
-  } catch (e) {
-    error = e;
-  }
-  if (error) {
-    return error;
-  }
-  return publicKey;
+  const { address } = await getAddress();
+  return address;
 };
 
-const userSignTransaction = async (xdr, network, signWith) => {
+const userSignTransaction = async (xdr, signWith) => {
   let signedTransaction = "";
   let error = "";
 
   try {
     signedTransaction = await signTransaction(xdr, {
-      network,
-      accountToSign: signWith,
+      networkPassphrase: Networks.TESTNET,
     });
   } catch (e) {
     error = e;

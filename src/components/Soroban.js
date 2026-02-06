@@ -2,204 +2,120 @@
 
 import {
   Contract,
-  SorobanRpc,
   TransactionBuilder,
   Networks,
   BASE_FEE,
   nativeToScVal,
   scValToNative,
+  rpc as StellarRpc,
 } from "@stellar/stellar-sdk";
+
 import { userSignTransaction } from "./Freighter";
 
-let rpcUrl = "https://soroban-testnet.stellar.org";
+/* ================= Config ================= */
 
-let contractAddress =
-  "CBG7QFA5CWUIJ6QQQSCWS33UNV6TN3EVQHRZLR5VYJWT5X73J6Y46U7A";
+const RPC_URL = "https://soroban-testnet.stellar.org:443";
+const NETWORK = Networks.TESTNET;
 
-// coverting String to ScVal form
-const stringToScValString = (value) => {
-  return nativeToScVal(value); // XDR format conversion
-};
+const CONTRACT_ADDRESS =
+  "CBK6DMOHM7I7G3IDNQS7JAJOCJ4XVO5SLXP6KHQAWNVTKW5YHETSE5UA";
 
-const numberToU64 = (value) => {
-  return nativeToScVal(value, { type: "u64" });
-};
+const server = new StellarRpc.Server(RPC_URL);
 
-let params = {
+const TX_PARAMS = {
   fee: BASE_FEE,
-  networkPassphrase: Networks.TESTNET,
+  networkPassphrase: NETWORK,
 };
 
+/* ================= Helpers ================= */
 
-// ------------------- Old
-// // Transaction Builder Function:
-// async function contractInt(caller, functName, values) {
-//   const server = new SorobanRpc.Server(rpcUrl, { allowHttp: true });
-//   const sourceAccount = await server.getAccount(caller);
-//   const contract = new Contract(contractAddress);
-//   let builtTransaction;
+const stringToScVal = (value) => nativeToScVal(value);
+const numberToU64 = (value) => nativeToScVal(value, { type: "u64" });
 
-//   if (values == null) {
-//     builtTransaction = new TransactionBuilder(sourceAccount, params)
-//       .addOperation(contract.call(functName))
-//       .setTimeout(30)
-//       .build();
-//   } else if (Array.isArray(values)) {
-//     builtTransaction = new TransactionBuilder(sourceAccount, params)
-//       .addOperation(contract.call(functName, ...values))
-//       .setTimeout(30)
-//       .build();
-//   } else {
-//     builtTransaction = new TransactionBuilder(sourceAccount, params)
-//       .addOperation(contract.call(functName, values))
-//       .setTimeout(30)
-//       .build();
-//   }
+/* ================= Core Contract Interaction ================= */
 
-//   let _buildTx = await server.prepareTransaction(builtTransaction);
+async function contractInt(caller, fnName, values) {
+  // 1 Load account
+  const sourceAccount = await server.getAccount(caller);
+  const contract = new Contract(CONTRACT_ADDRESS);
 
-//   let prepareTx = _buildTx.toXDR(); // pre-encoding (converting it to XDR format)
+  // 2 Build tx
+  const builder = new TransactionBuilder(sourceAccount, TX_PARAMS);
 
-//   let signedTx = await userSignTransaction(prepareTx, "TESTNET", caller);
-
-//   let tx = TransactionBuilder.fromXDR(signedTx, Networks.TESTNET);
-
-//   // try {
-//     let sendResponse = await server.sendTransaction(tx).catch(function (err) {
-//       console.error("Catch-1", err);
-//       return err;
-//     });
-//     if (sendResponse.errorResult) {
-//       throw new Error("Unable to submit transaction");
-//     }
-//     if (sendResponse.status === "PENDING") {
-//       let getResponse = await server.getTransaction(sendResponse.hash);
-//       //   we will continously checking the transaction status until it gets successfull added to the blockchain ledger or it gets rejected
-//       while (getResponse.status === "NOT_FOUND") {
-//         getResponse = await server.getTransaction(sendResponse.hash);
-//         await new Promise((resolve) => setTimeout(resolve, 1000));
-//       }
-
-//       console.log(`getTransaction response: ${JSON.stringify(getResponse)}`);
-
-//       if (getResponse.status === "SUCCESS") {
-//         // Make sure the transaction's resultMetaXDR is not empty
-//         if (!getResponse.resultMetaXdr) {
-//           throw "Empty resultMetaXDR in getTransaction response";
-//         }
-
-//         // Find the return value from the contract and return it
-//         let transactionMeta = getResponse.resultMetaXdr;
-//         let returnValue = transactionMeta.v3().sorobanMeta().returnValue();
-//         console.log(
-//           `Transaction result: ${scValToNative(returnValue)}`
-//         );
-//       } else {
-//         throw `Transaction failed: ${getResponse.resultXdr}`;
-//       }
-//     } else {
-//       throw sendResponse.errorResultXdr;
-//     }
-//   // } catch (err) {
-//   //   // Catch and report any errors we've thrown
-//   //   console.log("Sending transaction failed");
-//   //   console.log(JSON.stringify(err));
-//   // }
-// }
-// ------------------ Old
-
-// ------------------ New
-async function contractInt(caller, functName, values) {
-  const provider = new SorobanRpc.Server(rpcUrl, { allowHttp: true });
-  const sourceAccount = await provider.getAccount(caller);
-  const contract = new Contract(contractAddress);
-  let buildTx;
-
-  if (values == null) {
-    buildTx = new TransactionBuilder(sourceAccount, params)
-      .addOperation(contract.call(functName))
-      .setTimeout(30)
-      .build();
-  } else if (Array.isArray(values)) {
-    buildTx = new TransactionBuilder(sourceAccount, params)
-      .addOperation(contract.call(functName, ...values))
-      .setTimeout(30)
-      .build();
+  if (Array.isArray(values)) {
+    builder.addOperation(contract.call(fnName, ...values));
+  } else if (values !== undefined && values !== null) {
+    builder.addOperation(contract.call(fnName, values));
   } else {
-    buildTx = new TransactionBuilder(sourceAccount, params)
-      .addOperation(contract.call(functName, values))
-      .setTimeout(30)
-      .build();
+    builder.addOperation(contract.call(fnName));
   }
 
-  let _buildTx = await provider.prepareTransaction(buildTx);
+  const tx = builder.setTimeout(30).build();
 
-  let prepareTx = _buildTx.toXDR(); // pre-encoding (converting it to XDR format)
+  // 3 Prepare transaction (legacy Soroban flow)
+  const preparedTx = await server.prepareTransaction(tx);
 
-  let signedTx = await userSignTransaction(prepareTx, "TESTNET", caller);
+  // 4 Convert to XDR
+  const xdr = preparedTx.toXDR();
 
-  let tx = TransactionBuilder.fromXDR(signedTx, Networks.TESTNET);
+  // 5 Sign with Freighter
+  const signed = await userSignTransaction(xdr, caller);
 
-  // try {
-    let sendTx = await provider.sendTransaction(tx).catch(function (err) {
-      console.error("Catch-1", err);
-      return err;
-    });
-    // if (sendTx.errorResult) {
-    //   throw new Error("Unable to submit transaction");
-    // }
-    // if (sendTx.status === "PENDING") {
-      //   we will continously checking the transaction status until it gets successfull added to the blockchain ledger or it gets rejected
-      for (let i = 0; i < 5; i++) {
-        let txResponse = await provider.getTransaction(sendTx.hash);
-        if (txResponse.returnValue) {
-        return scValToNative(txResponse.returnValue());
+
+  const signedTx = TransactionBuilder.fromXDR(signed.signedTxXdr, NETWORK);
+
+  // 6 Send tx
+  const send = await server.sendTransaction(signedTx);
+
+  // 7 Poll
+  for (let i = 0; i < 10; i++) {
+    const res = await server.getTransaction(send.hash);
+
+    if (res.status === "SUCCESS") {
+      if (res.returnValue) {
+        return scValToNative(res.returnValue);
       }
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-}
-    // }
-  // } catch (err) {
-  //   console.log("Catch-2", err);
-  //   return;
-  // }
-}
+      return null;
+    }
 
+    if (res.status === "FAILED") {
+      throw new Error("Transaction failed");
+    }
 
-
-// // Interaction Functions: Built To interact with it's respective smart contract functions:
-
-async function sendFeedback(caller, fbData) {
-  let value = stringToScValString(fbData); //XDR format  let result;
-
-  try {
-    let result = await contractInt(caller, "send_feedback", value);
-    console.log("Your Feedback ID is: ", result); // ⚠️ 'result' should be an object, but getting 'undefined'
-  } catch (error) {
-    console.log("Unable to create Feedback!!, ", error);
+    await new Promise((r) => setTimeout(r, 1000));
   }
 
-  //  Converting to regular Number type:
-  // let fbId = Number(result?._value?._attributes?.val?._value)
-  // return fbId;
+  throw new Error("Transaction timeout");
 }
 
+/* ================= Contract Functions ================= */
 
-
-
-async function fetchFeedback(caller, fb_id) {
-  let value = numberToU64(fb_id);
-  let result;
-
+async function sendFeedback(caller, feedbackText) {
   try {
-    result = await contractInt(caller, "fetch_feedback", value);
-    console.log(`Fetched Feedback for the feedback-Id ${fb_id} is : ${result}`); // ⚠️ 'result' should be an object, but getting 'undefined'
-  } catch (error) {
-    console.log("Unable to fetch Feedback!!, ", error);
-  }
+    const value = stringToScVal(feedbackText);
+    const result = await contractInt(caller, "send_feedback", value);
 
-  //  Converting to regular string type:
-  // let feedback = result?._value?._attributes?.val?._value?.toString();
-  // return feedback;
+    console.log("Feedback ID:", Number(result));
+    return Number(result);
+  } catch (error) {
+    console.error("sendFeedback failed:", error);
+    throw error;
+  }
 }
+
+async function fetchFeedback(caller, feedbackId) {
+  try {
+    const value = numberToU64(feedbackId);
+    const result = await contractInt(caller, "fetch_feedback", value);
+
+    console.log("Fetched feedback:", result.message.toString());
+    return result.message.toString();
+  } catch (error) {
+    console.error("fetchFeedback failed:", error);
+    throw error;
+  }
+}
+
+/* ================= Exports ================= */
 
 export { sendFeedback, fetchFeedback };

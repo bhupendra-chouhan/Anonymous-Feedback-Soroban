@@ -1,5 +1,5 @@
 import {Contract, SorobanRpc, TransactionBuilder, nativeToScVal, scValToNative, xdr, Networks, BASE_FEE,  } from "@stellar/stellar-sdk";
-import { userSignTransaction } from "./Freighter";
+import { userSignTransaction } from "./src/components/Freighter";
 
 // function smartContractInteraction(caller, functName, values) {
   // const { activeChain, server, address } = useSorobanReact();

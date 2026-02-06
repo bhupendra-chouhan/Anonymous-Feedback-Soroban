@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { checkConnection, retrievePublicKey } from "./Freighter";
-import { fetchFeedback } from "./SmartContractInteraction";
+// import { fetchFeedback } from "./Soroban";
 
 const Header = ({ setPubKey }) => {
   const [connect, getConnected] = useState("Connect");
@@ -13,7 +13,6 @@ const Header = ({ setPubKey }) => {
     if (publickey !== "") {
       getConnected("Connected!");
       setPubKey(publickey);
-      fetchFeedback(publickey, 1);
     }
   }, [publickey]);
 
@@ -51,9 +50,7 @@ const Header = ({ setPubKey }) => {
                 Address
               </span>
               <span className="px-2">
-                {`${publickey.substring(0, 4)} ${
-                  publickey && "..."
-                } ${publickey.substring(publickey.length - 4)}`}
+                {`${publickey.slice(0, 4)}...${publickey.slice(-4)}`}
               </span>
             </div>
           </li>
